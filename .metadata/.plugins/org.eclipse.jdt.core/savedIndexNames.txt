@@ -1,4 +1,0 @@
-INDEX VERSION 1.134+E:\3rd Year\JENKINS\JENKINS-FULLSTACK\.metadata\.plugins\org.eclipse.jdt.core
-3514688602.index
-423727684.index
-1865797976.index
