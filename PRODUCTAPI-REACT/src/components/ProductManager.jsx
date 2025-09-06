@@ -6,7 +6,6 @@ import config from './config.js';
 const ProductManager = () => {
   const [products, setProducts] = useState([]);
   const [product, setProduct] = useState({
-    id: '',
     name: '',
     price: '',
     description: '',
@@ -17,8 +16,9 @@ const ProductManager = () => {
   const [fetchedProduct, setFetchedProduct] = useState(null);
   const [message, setMessage] = useState('');
   const [editMode, setEditMode] = useState(false);
+  const [editId, setEditId] = useState(null); // store ID internally for updates
 
-  const baseUrl = `${config.url}/productapi`;
+  const baseUrl = `${config.url}`;
 
   useEffect(() => {
     fetchAllProducts();
@@ -62,7 +62,7 @@ const ProductManager = () => {
   const updateProduct = async () => {
     if (!validateForm()) return;
     try {
-      await axios.put(`${baseUrl}/update`, product);
+      await axios.put(`${baseUrl}/update/${editId}`, product); // send ID in URL
       setMessage('Product updated successfully.');
       fetchAllProducts();
       resetForm();
@@ -93,14 +93,15 @@ const ProductManager = () => {
   };
 
   const handleEdit = (prod) => {
-    setProduct(prod);
+    const { id, ...rest } = prod; // remove ID from form
+    setProduct(rest);
+    setEditId(id); // store ID for updating
     setEditMode(true);
-    setMessage(`Editing product with ID ${prod.id}`);
+    setMessage(`Editing product with ID ${id}`);
   };
 
   const resetForm = () => {
     setProduct({
-      id: '',
       name: '',
       price: '',
       description: '',
@@ -108,6 +109,7 @@ const ProductManager = () => {
       category: ''
     });
     setEditMode(false);
+    setEditId(null);
   };
 
   return (
@@ -123,7 +125,6 @@ const ProductManager = () => {
       <div>
         <h3>{editMode ? 'Edit Product' : 'Add Product'}</h3>
         <div className="form-grid">
-          <input type="number" name="id" placeholder="ID" value={product.id} onChange={handleChange} />
           <input type="text" name="name" placeholder="Name" value={product.name} onChange={handleChange} />
           <input type="number" name="price" placeholder="Price" value={product.price} onChange={handleChange} />
           <input type="text" name="description" placeholder="Description" value={product.description} onChange={handleChange} />
@@ -170,18 +171,22 @@ const ProductManager = () => {
             <table>
               <thead>
                 <tr>
-                  {Object.keys(product).map((key) => (
-                    <th key={key}>{key}</th>
-                  ))}
+                  <th>Name</th>
+                  <th>Price</th>
+                  <th>Description</th>
+                  <th>Stock</th>
+                  <th>Category</th>
                   <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {products.map((prod) => (
                   <tr key={prod.id}>
-                    {Object.keys(product).map((key) => (
-                      <td key={key}>{prod[key]}</td>
-                    ))}
+                    <td>{prod.name}</td>
+                    <td>{prod.price}</td>
+                    <td>{prod.description}</td>
+                    <td>{prod.stock}</td>
+                    <td>{prod.category}</td>
                     <td>
                       <div className="action-buttons">
                         <button className="btn-green" onClick={() => handleEdit(prod)}>Edit</button>
