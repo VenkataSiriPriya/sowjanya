@@ -24,6 +24,7 @@ const ProductManager = () => {
     fetchAllProducts();
   }, []);
 
+  // Fetch all products
   const fetchAllProducts = async () => {
     try {
       const res = await axios.get(`${baseUrl}/all`);
@@ -33,10 +34,12 @@ const ProductManager = () => {
     }
   };
 
+  // Handle input change
   const handleChange = (e) => {
     setProduct({ ...product, [e.target.name]: e.target.value });
   };
 
+  // Validate form
   const validateForm = () => {
     for (let key in product) {
       if (!product[key] || product[key].toString().trim() === '') {
@@ -47,6 +50,7 @@ const ProductManager = () => {
     return true;
   };
 
+  // Add product
   const addProduct = async () => {
     if (!validateForm()) return;
     try {
@@ -59,10 +63,11 @@ const ProductManager = () => {
     }
   };
 
+  // Update product (send ID in body, not URL)
   const updateProduct = async () => {
     if (!validateForm()) return;
     try {
-      await axios.put(`${baseUrl}/update/${editId}`, product); // send ID in URL
+      await axios.put(`${baseUrl}/update`, { id: editId, ...product }); // ✅ send ID in body
       setMessage('Product updated successfully.');
       fetchAllProducts();
       resetForm();
@@ -71,6 +76,7 @@ const ProductManager = () => {
     }
   };
 
+  // Delete product
   const deleteProduct = async (id) => {
     try {
       const res = await axios.delete(`${baseUrl}/delete/${id}`);
@@ -81,6 +87,7 @@ const ProductManager = () => {
     }
   };
 
+  // Get product by ID
   const getProductById = async () => {
     try {
       const res = await axios.get(`${baseUrl}/get/${idToFetch}`);
@@ -92,14 +99,16 @@ const ProductManager = () => {
     }
   };
 
+  // Handle edit
   const handleEdit = (prod) => {
-    const { id, ...rest } = prod; // remove ID from form
+    const { id, ...rest } = prod;
     setProduct(rest);
-    setEditId(id); // store ID for updating
+    setEditId(id);
     setEditMode(true);
     setMessage(`Editing product with ID ${id}`);
   };
 
+  // Reset form
   const resetForm = () => {
     setProduct({
       name: '',
@@ -122,6 +131,7 @@ const ProductManager = () => {
 
       <h2>Product Management</h2>
 
+      {/* Add / Edit Form */}
       <div>
         <h3>{editMode ? 'Edit Product' : 'Add Product'}</h3>
         <div className="form-grid">
@@ -144,6 +154,7 @@ const ProductManager = () => {
         </div>
       </div>
 
+      {/* Get by ID */}
       <div>
         <h3>Get Product By ID</h3>
         <input
@@ -162,6 +173,7 @@ const ProductManager = () => {
         )}
       </div>
 
+      {/* All Products */}
       <div>
         <h3>All Products</h3>
         {products.length === 0 ? (
